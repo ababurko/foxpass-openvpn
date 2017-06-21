@@ -22,7 +22,13 @@ ENV TLD com
 #ENV DOMAIN mydomain
 #ENV BIND_PASSWORD mydomain
 
-RUN apt-get -qy update && apt-get -qy install curl iptables openvpn openvpn-auth-ldap unzip
+RUN apt-get -qy update && apt-get -qy install wget curl iptables openvpn-auth-ldap unzip
+
+ENV OPENVPN_BRANCH "release/2.4"
+ENV OPENVPN_OS jessie
+RUN sh -c 'wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg|apt-key add -'
+RUN sh -c 'echo "deb http://build.openvpn.net/debian/openvpn/${OPENVPN_BRANCH} ${OPENVPN_OS} main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
+RUN apt-get update && apt-get install -y openvpn
 RUN curl -o /tmp/consul-template.zip -L $CONSUL_TEMPLATE_URL && ( cd /usr/bin && unzip /tmp/consul-template.zip )
 
 ADD etc/openvpn/ /etc/openvpn/
